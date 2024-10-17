@@ -18,22 +18,23 @@ app.get('/create-transaction', (req, res) => {
 
 // Merchant receives the proof from the user
 app.post('/merchant/submit', async (req, res) => {
-  const { proof, transactionAmount } = req.body;
-  console.log(proof, transactionAmount);
+  const { proof, publicSignals } = req.body;
+  console.log(proof, publicSignals);
   // Forward the proof to the bank for verification
   const response = await fetch('http://localhost:6000/bank/verify-proof', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ proof, transactionAmount }),
+    body: JSON.stringify({ proof, publicSignals }),
   });
 
+
   const verificationResult = await response.json();
-  // if (verificationResult.verified) {
-  //   res.json({ message: 'Transaction Approved!' });
-  // } else {
-  //   res.status(400).json({ message: 'Transaction Rejected!' });
-  // }
-  res.json({ message: 'Transaction Approved!' });
+  console.log(verificationResult);
+  if (verificationResult.verified) {
+    res.json({ message: 'Transaction Approved!' });
+  } else {
+    res.status(400).json({ message: 'Transaction Rejected!' });
+  }
 });
 
 app.listen(4000, () => {

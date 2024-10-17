@@ -11,12 +11,11 @@ app.use(express.json());
 
 // Verifies the proof received from the merchant
 app.post('/bank/verify-proof', async (req, res) => {
-  const { proof, transactionAmount } = req.body;
-  console.log(proof, transactionAmount); 
+  const { proof, publicSignals } = req.body;
+  console.log(proof, publicSignals); 
   // Verify the proof using snarkJS
   const verificationKey = JSON.parse(fs.readFileSync('verification_key.json')) // Your verification key
 
-  const publicSignals = [transactionAmount];
   console.log("publicSignals:",publicSignals);
   const isValid = await groth16.verify(verificationKey, publicSignals, proof);
 
@@ -26,7 +25,6 @@ app.post('/bank/verify-proof', async (req, res) => {
   } else {
     res.json({ verified: false });
   }
-  // res.json({ verified: true });
 });
 
 app.listen(6000, () => {
